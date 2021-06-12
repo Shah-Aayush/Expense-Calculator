@@ -21,6 +21,14 @@ class _TransactionListState extends State<TransactionList>
     super.initState();
     _controller =
         AnimationController(vsync: this, duration: Duration(seconds: 2));
+    _controller.addListener(() {
+      // print(_controller.value);
+      //  if the full duration of the animation is 8 secs then 0.5 is 4 secs
+      if (_controller.value > 0.4) {
+// When it gets there hold it there.
+        _controller.value = 0.4;
+      }
+    });
   }
 
   @override
