@@ -1,3 +1,6 @@
+import 'dart:io';
+import 'adaptive_text_button.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
@@ -83,6 +86,11 @@ class _NewTransactionState extends State<NewTransaction> {
   }
 
   void showMessage(BuildContext context, String message) {
+    // final cupertinoAlert = CupertinoAlertDialog(
+    //   // title: Text(),
+    //   content: Text(message),
+    //   actions: [CupertinoDialogAction(child: Text('Okay'),)],
+    // );
     final snackBar = SnackBar(
       content: Row(
         children: [
@@ -107,7 +115,24 @@ class _NewTransactionState extends State<NewTransaction> {
       ),
     );
     print('Message showed');
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    if (Platform.isAndroid) {
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    } else {
+      showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return CupertinoAlertDialog(
+              title: Text(message),
+              // content: Text(message),
+              actions: [
+                CupertinoDialogAction(
+                  child: Text('Okay'),
+                  onPressed: () => Navigator.of(context).pop(false),
+                )
+              ],
+            );
+          });
+    }
   }
 
   late BuildContext thisContext;
@@ -141,12 +166,6 @@ class _NewTransactionState extends State<NewTransaction> {
             TextField(
               decoration: new InputDecoration(
                 labelText: 'Title',
-                // border: new OutlineInputBorder(
-                //   borderRadius: const BorderRadius.only(
-                //       // topLeft: Radius.circular(25),
-                //       // topRight: Radius.circular(25),
-                //       ),
-                // ),
               ),
               focusNode: titleField,
               controller: _titleController,
@@ -154,9 +173,6 @@ class _NewTransactionState extends State<NewTransaction> {
                 FocusScope.of(context).nextFocus();
                 thisContext = context;
               },
-              // onChanged: (title) {
-              //   titleInput = title;
-              // },
             ),
             TextField(
               focusNode: amountField,
@@ -199,38 +215,37 @@ class _NewTransactionState extends State<NewTransaction> {
                       ),
                     ),
                   ),
-                  TextButton(
-                    onPressed: _presentDatePicker,
-                    child: Text(
-                      'Choose Date',
-                      // style: Theme.of(context).textTheme.headline6,
-                      style: TextStyle(
-                        fontFamily: 'Quicksand',
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).primaryColor,
-                      ),
-                    ),
-                  ),
+                  AdaptiveTextButton('Choose Date', _presentDatePicker),
                 ],
               ),
             ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                primary: Theme.of(context).primaryColor,
-                onPrimary: Theme.of(context).textTheme.button!.color,
-                // textStyle: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              onPressed: () {
-                thisContext = context;
-                _submitData();
-              },
-              child: Text(
-                'Add Transaction',
-                style: TextStyle(
-                    // fontWeight: FontWeight.bold,
+            (Platform.isIOS)
+                ? Center(
+                    child: CupertinoButton(
+                        child: Text('Add Transaction'),
+                        color: Theme.of(context).primaryColor,
+                        onPressed: () {
+                          thisContext = context;
+                          _submitData();
+                        }),
+                  )
+                : ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      primary: Theme.of(context).primaryColor,
+                      onPrimary: Theme.of(context).textTheme.button!.color,
+                      // textStyle: TextStyle(fontWeight: FontWeight.bold),
                     ),
-              ),
-            ),
+                    onPressed: () {
+                      thisContext = context;
+                      _submitData();
+                    },
+                    child: Text(
+                      'Add Transaction',
+                      style: TextStyle(
+                          // fontWeight: FontWeight.bold,
+                          ),
+                    ),
+                  ),
           ],
         ),
       ),
