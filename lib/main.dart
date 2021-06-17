@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 // import 'package:flutter/services.dart';
 import "dart:math";
 import 'package:lottie/lottie.dart';
-// import 'package:animated_theme_switcher/animated_theme_switcher.dart';
+import 'package:animated_theme_switcher/animated_theme_switcher.dart';
 
 // import 'package:flushbar/flushbar.dart';
 
@@ -23,192 +23,97 @@ void main() {
 }
 
 var thisContext;
+ThemeData lightTheme = ThemeData(
+  textTheme: ThemeData.light().textTheme.copyWith(
+        headline6: TextStyle(
+          fontFamily: 'Quicksand',
+          fontWeight: FontWeight.bold,
+          color: Colors.purple,
+          fontSize: 20,
+        ),
+        button: TextStyle(
+          color: Colors.white,
+        ),
+      ),
+  appBarTheme: AppBarTheme(
+    textTheme: ThemeData.light().textTheme.copyWith(
+          headline6: TextStyle(
+            fontFamily: 'OpenSans',
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+  ),
+  primarySwatch: Colors.purple,
+  primaryColorDark: Colors.white,
+  accentColor: Colors.amber,
+  errorColor: Colors.red,
+  fontFamily: 'Quicksand',
+  backgroundColor: Colors.white,
+);
+
+ThemeData darkTheme = ThemeData(
+  textTheme: ThemeData.dark().textTheme.copyWith(
+        headline6: TextStyle(
+          fontFamily: 'Quicksand',
+          fontWeight: FontWeight.bold,
+          color: Colors.white.withOpacity(0.87),
+          fontSize: 20,
+        ),
+        button: TextStyle(
+          color: Color(0xff3c3534),
+        ),
+      ),
+  appBarTheme: AppBarTheme(
+    color: Color(0xff272727),
+    textTheme: ThemeData.dark().textTheme.copyWith(
+          headline6: TextStyle(
+            color: Color(0xffFFFFFF).withOpacity(.87),
+            fontFamily: 'OpenSans',
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+  ),
+  primarySwatch: Colors.purple,
+  primaryColorDark: Color(0xff443a36),
+  accentColor: Colors.amber.withOpacity(0.5),
+  errorColor: Color(0xfffc3c1c).withOpacity(0.7),
+  fontFamily: 'Quicksand',
+  primaryColor: Color(0xfffdba78),
+  backgroundColor: Colors.white.withOpacity(0.5),
+  cardColor: Color(0xff202020),
+  scaffoldBackgroundColor: Color(0xff121212),
+  bottomSheetTheme: BottomSheetThemeData(backgroundColor: Color(0xff443a36)),
+);
 
 // ignore: must_be_immutable
 class MyApp extends StatelessWidget {
-  final ValueNotifier<ThemeMode> _notifier = ValueNotifier(ThemeMode.system);
   var isDark;
   @override
   Widget build(BuildContext context) {
     thisContext = context;
-    if (ThemeMode.system == ThemeMode.dark) {
-      isDark = true;
-    } else {
-      isDark = false;
-    }
-    print('at start $isDark');
+    final isPlatformDark =
+        WidgetsBinding.instance!.window.platformBrightness == Brightness.dark;
 
-    //test starts
-    return ValueListenableBuilder<ThemeMode>(
-      valueListenable: _notifier,
-      builder: (_, mode, __) {
-        void themeChanger() {
-          // _notifier.value =
-          //     mode == ThemeMode.light ? ThemeMode.dark : ThemeMode.light;
-          _notifier.value = !isDark ? ThemeMode.dark : ThemeMode.light;
-          if (isDark) {
-            isDark = false;
-          } else {
-            isDark = true;
-          }
-        }
-
+    final initTheme = isPlatformDark ? darkTheme : lightTheme;
+    return ThemeProvider(
+      initTheme: initTheme,
+      builder: (_, myTheme) {
         return MaterialApp(
           debugShowCheckedModeBanner: false,
-          title: 'Personal Expenses',
-          home: MyHomePage(themeChanger, isDark),
-          theme: ThemeData(
-            textTheme: ThemeData.light().textTheme.copyWith(
-                  headline6: TextStyle(
-                    fontFamily: 'Quicksand',
-                    fontWeight: FontWeight.bold,
-                    color: Colors.purple,
-                    fontSize: 20,
-                  ),
-                  button: TextStyle(
-                    color: Colors.white,
-                  ),
-                ),
-            appBarTheme: AppBarTheme(
-              textTheme: ThemeData.light().textTheme.copyWith(
-                    headline6: TextStyle(
-                      fontFamily: 'OpenSans',
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-            ),
-            primarySwatch: Colors.purple,
-            primaryColorDark: Colors.white,
-            accentColor: Colors.amber,
-            errorColor: Colors.red,
-            fontFamily: 'Quicksand',
-            backgroundColor: Colors.white,
-          ),
-          darkTheme: ThemeData(
-            textTheme: ThemeData.dark().textTheme.copyWith(
-                  headline6: TextStyle(
-                    fontFamily: 'Quicksand',
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white.withOpacity(0.87),
-                    fontSize: 20,
-                  ),
-                  button: TextStyle(
-                    color: Color(0xff3c3534),
-                  ),
-                ),
-            appBarTheme: AppBarTheme(
-              color: Color(0xff272727),
-              textTheme: ThemeData.dark().textTheme.copyWith(
-                    headline6: TextStyle(
-                      color: Color(0xffFFFFFF).withOpacity(.87),
-                      fontFamily: 'OpenSans',
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-            ),
-            primarySwatch: Colors.purple,
-            primaryColorDark: Color(0xff443a36),
-            accentColor: Colors.amber.withOpacity(0.5),
-            errorColor: Color(0xfffc3c1c).withOpacity(0.7),
-            fontFamily: 'Quicksand',
-            primaryColor: Color(0xfffdba78),
-            backgroundColor: Colors.white.withOpacity(0.5),
-            cardColor: Color(0xff202020),
-            scaffoldBackgroundColor: Color(0xff121212),
-            bottomSheetTheme:
-                BottomSheetThemeData(backgroundColor: Color(0xff443a36)),
-          ),
-          themeMode: mode,
+          title: 'Flutter Demo',
+          theme: myTheme,
+          home: MyHomePage(isPlatformDark),
         );
       },
     );
-    //test ends
-
-    // return MaterialApp(
-    //   debugShowCheckedModeBanner: false,
-    //   title: 'Personal Expenses',
-    //   home: MyHomePage(),
-    //   theme: ThemeData(
-    //     textTheme: ThemeData.light().textTheme.copyWith(
-    //           headline6: TextStyle(
-    //             fontFamily: 'Quicksand',
-    //             fontWeight: FontWeight.bold,
-    //             color: Colors.purple,
-    //             fontSize: 20,
-    //           ),
-    //           button: TextStyle(
-    //             color: Colors.white,
-    //           ),
-    //         ),
-    //     appBarTheme: AppBarTheme(
-    //       textTheme: ThemeData.light().textTheme.copyWith(
-    //             headline6: TextStyle(
-    //               fontFamily: 'OpenSans',
-    //               fontSize: 20,
-    //               fontWeight: FontWeight.bold,
-    //             ),
-    //           ),
-    //     ),
-    //     primarySwatch: Colors.purple,
-    //     primaryColorDark: Colors.white,
-    //     accentColor: Colors.amber,
-    //     errorColor: Colors.red,
-    //     fontFamily: 'Quicksand',
-    //     backgroundColor: Colors.white,
-    //   ),
-    //   darkTheme: ThemeData(
-    //     textTheme: ThemeData.dark().textTheme.copyWith(
-    //           headline6: TextStyle(
-    //             fontFamily: 'Quicksand',
-    //             fontWeight: FontWeight.bold,
-    //             color: Colors.white.withOpacity(0.87),
-    //             fontSize: 20,
-    //           ),
-    //           button: TextStyle(
-    //             color: Color(0xff3c3534),
-    //           ),
-    //         ),
-    //     appBarTheme: AppBarTheme(
-    //       color: Color(0xff272727),
-    //       textTheme: ThemeData.dark().textTheme.copyWith(
-    //             headline6: TextStyle(
-    //               color: Color(0xffFFFFFF).withOpacity(.87),
-    //               fontFamily: 'OpenSans',
-    //               fontSize: 20,
-    //               fontWeight: FontWeight.bold,
-    //             ),
-    //           ),
-    //     ),
-    //     primarySwatch: Colors.purple,
-    //     primaryColorDark: Color(0xff443a36),
-    //     accentColor: Colors.amber.withOpacity(0.5),
-    //     errorColor: Color(0xfffc3c1c).withOpacity(0.7),
-    //     fontFamily: 'Quicksand',
-    //     primaryColor: Color(0xfffdba78),
-    //     backgroundColor: Colors.white.withOpacity(0.5),
-    //     cardColor: Color(0xff202020),
-    //     scaffoldBackgroundColor: Color(0xff121212),
-    //     bottomSheetTheme:
-    //         BottomSheetThemeData(backgroundColor: Color(0xff443a36)),
-    //   ),
-    //   themeMode: ThemeMode.dark,
-    // );
   }
 }
 
 class MyHomePage extends StatefulWidget {
   final isDark;
-  // final DateFormat formatter = DateFormat('dd-MM-yyyy');
-
-  // late String titleInput;
-  // late String amountInput;
-
-  // final titleController = TextEditingController();
-  // final amountController = TextEditingController();
-  final Function themeChanger;
-  MyHomePage(this.themeChanger, this.isDark);
+  MyHomePage(this.isDark);
   @override
   _MyHomePageState createState() => _MyHomePageState(isDark);
 }
@@ -217,38 +122,7 @@ class _MyHomePageState extends State<MyHomePage> {
   var isDark;
   _MyHomePageState(this.isDark);
 //imported code starts
-  final List<Transaction> _userTransactions = [
-    // Transaction(
-    //   id: 't1',
-    //   title: 'New Shoes',
-    //   amount: 69.99,
-    //   date: DateTime.now(),
-    // ),
-    // Transaction(
-    //   id: 't2',
-    //   title: 'Weekly Groceries',
-    //   amount: 16.53,
-    //   date: DateTime.now(),
-    // ),
-    // Transaction(
-    //   id: 't3',
-    //   title: 'Starbucks Coffee',
-    //   amount: 11.99,
-    //   date: DateTime.now(),
-    // ),
-    // Transaction(
-    //   id: 't4',
-    //   title: 'Oreo Biscuits',
-    //   amount: 7.69,
-    //   date: DateTime.now(),
-    // ),
-    // Transaction(
-    //   id: 't5',
-    //   title: 'Tomato Ketchup',
-    //   amount: 31.57,
-    //   date: DateTime.now(),
-    // ),
-  ];
+  final List<Transaction> _userTransactions = [];
 
   String getRandomAnimation() {
     var listOfAnimations = [
@@ -396,91 +270,49 @@ class _MyHomePageState extends State<MyHomePage> {
           _appBarIconColor = Theme.of(context).backgroundColor;
         }
       });
-
-    // final appBar = AppBar(
-    //   title: Text(
-    //     'Personal Expenses',
-    //     // style: TextStyle(fontFamily: 'OpenSans'),
-    //   ),
-    //   actions: <Widget>[
-    //     IconButton(
-    //       icon: Icon(
-    //         //app bar add icon
-    //         // Icons.add_chart_rounded,
-    //         // Icons.addchart_rounded,
-    //         Icons.insert_chart_outlined,
-    //         // Icons.add,
-    //         color: _appBarIconColor,
-    //         size: 30,
-    //       ),
-    //       // onPressed: () => _startAddNewTransaction(context),
-    //       onPressed: () {
-    //         _isUserPressedChartButton = true;
-    //         setState(() {
-    //           if (_showChart) {
-    //             _showChart = false;
-    //             _appBarIconColor = Colors.white;
-    //           } else {
-    //             _showChart = true;
-    //             _appBarIconColor = Colors.amber;
-    //           }
-    //           print(_showChart);
-    //         });
-    //       },
-    //     )
-    //   ],
-    // );
-
-    // var isMoonIcon =
-    //     (MediaQuery.of(context).platformBrightness == Brightness.dark)
-    //         ? true
-    //         : false;
-
-    final appBar = AppBar(
+    AppBar appBar = AppBar(
       title: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-        IconButton(
-          icon: Icon(
-            // themeIconName,
-            (isDark) ? Icons.wb_sunny_rounded : Icons.dark_mode,
-            color: (isDark) ? Colors.amber.withOpacity(0.5) : Colors.amber,
-            // (isMoonIcon) ? (Icons.dark_mode) : (Icons.wb_sunny_rounded),
-            // color: _appBarIconColor,
-          ),
-          onPressed: () {
-            print('toggle theme mode : $isDark');
-            setState(() {
-              widget.themeChanger();
-              if (isDark) {
-                isDark = false;
-              } else {
-                isDark = true;
-              }
-              // if (MediaQuery.of(context).platformBrightness ==
-              //     Brightness.dark) {
-              //   // isMoonIcon = true;
-              //   themeIconName = Icons.dark_mode;
-              // } else {
-              //   // isMoonIcon = false;
-              //   themeIconName = Icons.wb_sunny_rounded;
-              // }
-            });
-            print('After toggling : $isDark');
+        // SizedBox(
+        //   height: 10,
+        //   width: 40,
+        //   child:
+        ThemeSwitcher(
+          clipper: ThemeSwitcherCircleClipper(),
+          builder: (context) {
+            return IconButton(
+              icon: Icon(
+                (isDark) ? Icons.wb_sunny_rounded : Icons.dark_mode,
+                color: (isDark) ? Colors.amber.withOpacity(0.5) : Colors.amber,
+              ),
+              onPressed: () {
+                if (isDark) {
+                  isDark = false;
+                } else {
+                  isDark = true;
+                }
+                print('status : $isDark');
+                // var brightness = ThemeProvider.of(context)!.brightness;
+                ThemeSwitcher.of(context)!.changeTheme(
+                  theme: isDark ? darkTheme : lightTheme,
+                  // theme: brightness == Brightness.light
+                  //     ? darkTheme
+                  //     : lightTheme,
+                  reverseAnimation: isDark ? false : true,
+                );
+              },
+            );
           },
         ),
+
         Text(
           'Personal Expenses',
         ),
         IconButton(
           icon: Icon(
-            //app bar add icon
-            // Icons.add_chart_rounded,
-            // Icons.addchart_rounded,
             Icons.insert_chart_outlined,
-            // Icons.add,
             color: _appBarIconColor,
             size: 30,
           ),
-          // onPressed: () => _startAddNewTransaction(context),
           onPressed: () {
             print('showchart toggle pressed.');
             _isUserPressedChartButton = true;
@@ -499,55 +331,49 @@ class _MyHomePageState extends State<MyHomePage> {
             });
           },
         )
-      ]
-
-          // style: TextStyle(fontFamily: 'OpenSans'),
-          ),
-      // actions: <Widget>[],
+      ]),
     );
-
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      appBar: appBar,
-      body: Column(
-        // mainAxisAlignment:
-        //     MainAxisAlignment.spaceAround, //vertical      FOR COLUMN
-        // crossAxisAlignment:
-        //     CrossAxisAlignment.stretch, //horizontal    FOR COLUMN
-        children: [
-          if (_userTransactions.isNotEmpty && _showChart)
+    return ThemeSwitchingArea(
+      child: Scaffold(
+        resizeToAvoidBottomInset: false,
+        appBar: appBar,
+        body: Column(
+          children: [
+            if (_userTransactions.isNotEmpty && _showChart)
+              Container(
+                height: (mediaQuery.size.height -
+                        appBar.preferredSize.height -
+                        mediaQuery.padding.top) *
+                    ((mediaQuery.orientation == Orientation.portrait)
+                        ? (0.25)
+                        : (0.50)),
+                // height: (mediaQuery.size.height -
+                //         appBar.preferredSize.height -
+                //         mediaQuery.padding.top) *
+                //     ((mediaQuery.orientation == Orientation.portrait)
+                //         ? (0.25)
+                //         : (0.50)),
+                child: Chart(_recentTransactions),
+              ),
             Container(
               height: (mediaQuery.size.height -
-                      appBar.preferredSize.height -
-                      mediaQuery.padding.top) *
+                      mediaQuery.padding.top -
+                      appBar.preferredSize.height) *
                   ((mediaQuery.orientation == Orientation.portrait)
-                      ? (0.25)
-                      : (0.50)),
-              child: Chart(_recentTransactions),
+                      ? ((_showChart) ? (0.75) : (1))
+                      : ((_showChart) ? (0.50) : (1))),
+              child: TransactionList(
+                _userTransactions,
+                _deleteTransaction,
+              ),
             ),
-          Container(
-            height: (mediaQuery.size.height -
-                    appBar.preferredSize.height -
-                    mediaQuery.padding.top) *
-                ((mediaQuery.orientation == Orientation.portrait)
-                    ? ((_showChart) ? (0.75) : (1))
-                    : ((_showChart) ? (0.50) : (1))),
-            child: TransactionList(
-              _userTransactions,
-              _deleteTransaction,
-            ),
-          ),
-          // if (_userTransactions.isNotEmpty) Chart(_recentTransactions),
-          // TransactionList(
-          //   _userTransactions,
-          //   _deleteTransaction,
-          // ),
-        ],
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
-        onPressed: () => _startAddNewTransaction(context),
+          ],
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+        floatingActionButton: FloatingActionButton(
+          child: Icon(Icons.add),
+          onPressed: () => _startAddNewTransaction(context),
+        ),
       ),
     );
   }
