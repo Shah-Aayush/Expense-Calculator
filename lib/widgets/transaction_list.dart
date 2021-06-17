@@ -39,10 +39,12 @@ class _TransactionListState extends State<TransactionList>
 
   @override
   Widget build(BuildContext context) {
+    final mediaQuery = MediaQuery.of(context);
     return Expanded(
       child: Container(
           // height: 300,
-          // height: (MediaQuery.of(context).size.height / 3) * 1.9,
+          // height: (mediaQuery.size.height / 3) * 1.9,
+          // height: mediaQuery.size.height * 0.6,
           width: double.infinity,
           child: widget.transactions.isEmpty
               ? Column(
@@ -66,36 +68,38 @@ class _TransactionListState extends State<TransactionList>
                         // ),
                       ),
                     ),
-                    GestureDetector(
-                      onTap: () {
-                        print('tapped animation');
-                        _controller.reverse();
-                        Future.delayed(
-                            const Duration(seconds: 1, milliseconds: 500), () {
-                          setState(() {
-                            // _controller.animateTo(30);
-                            _controller.forward();
+                    if (mediaQuery.orientation == Orientation.portrait)
+                      GestureDetector(
+                        onTap: () {
+                          print('tapped animation');
+                          _controller.reverse();
+                          Future.delayed(
+                              const Duration(seconds: 1, milliseconds: 500),
+                              () {
+                            setState(() {
+                              // _controller.animateTo(30);
+                              _controller.forward();
+                            });
                           });
-                        });
-                      },
-                      child: Lottie.asset(
-                        'assets/animations/empty_box.json',
-                        controller: _controller,
-                        width: 300,
-                        repeat: false,
-                        onLoaded: (composition) {
-                          // _controller.animateTo(50);
-                          _controller
-                            ..duration = composition.duration
-                            ..forward();
-                          // Future.delayed(Duration(seconds: 1), () {
-                          //   setState(() {
-                          //     _controller.reverse();
-                          //   });
-                          // });
                         },
+                        child: Lottie.asset(
+                          'assets/animations/empty_box.json',
+                          controller: _controller,
+                          width: mediaQuery.size.width * .9,
+                          repeat: false,
+                          onLoaded: (composition) {
+                            // _controller.animateTo(50);
+                            _controller
+                              ..duration = composition.duration
+                              ..forward();
+                            // Future.delayed(Duration(seconds: 1), () {
+                            //   setState(() {
+                            //     _controller.reverse();
+                            //   });
+                            // });
+                          },
+                        ),
                       ),
-                    ),
                   ],
                 )
               : ListView.builder(
@@ -106,11 +110,15 @@ class _TransactionListState extends State<TransactionList>
                       child: ListTile(
                         leading: CircleAvatar(
                           radius: 30,
+                          backgroundColor: Theme.of(context).primaryColor,
                           child: Padding(
                             padding: EdgeInsets.all(6),
                             child: FittedBox(
                               child: Text(
-                                  '\$${widget.transactions[index].amount.toStringAsFixed(2)}'),
+                                '\$${widget.transactions[index].amount.toStringAsFixed(2)}',
+                                style: TextStyle(
+                                    color: Theme.of(context).primaryColorDark),
+                              ),
                             ),
                           ),
                         ),
@@ -126,17 +134,32 @@ class _TransactionListState extends State<TransactionList>
                             fontFamily: 'Quicksand',
                           ),
                         ),
-                        trailing: IconButton(
-                          icon: Icon(Icons.delete),
-                          color: Theme.of(context).errorColor,
-                          onPressed: () {
-                            print(
-                                'delete pressed. ${widget.transactions[index].id}');
-                            widget.deleteTx(widget.transactions[index].id);
-                          },
-                          // onPressed: () =>
-                          //     widget.deleteTx(widget.transactions[index].id),
-                        ),
+                        trailing: (mediaQuery.size.width > 460)
+                            ? TextButton.icon(
+                                onPressed: () {
+                                  print(
+                                      'delete pressed. ${widget.transactions[index].id}');
+                                  widget
+                                      .deleteTx(widget.transactions[index].id);
+                                },
+                                icon: Icon(Icons.delete),
+                                label: Text('Delete'),
+                                style: TextButton.styleFrom(
+                                  primary: Theme.of(context).errorColor,
+                                ),
+                              )
+                            : IconButton(
+                                icon: Icon(Icons.delete),
+                                color: Theme.of(context).errorColor,
+                                onPressed: () {
+                                  print(
+                                      'delete pressed. ${widget.transactions[index].id}');
+                                  widget
+                                      .deleteTx(widget.transactions[index].id);
+                                },
+                                // onPressed: () =>
+                                //     widget.deleteTx(widget.transactions[index].id),
+                              ),
                       ),
                     );
 

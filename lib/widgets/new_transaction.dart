@@ -98,7 +98,8 @@ class _NewTransactionState extends State<NewTransaction> {
           ),
         ],
       ),
-      margin: EdgeInsets.only(bottom: MediaQuery.of(context).size.height / 2),
+      margin: EdgeInsets.only(
+          bottom: MediaQuery.of(context).size.height / 2, right: 5, left: 5),
       duration: Duration(seconds: 3),
       behavior: SnackBarBehavior.floating,
       shape: RoundedRectangleBorder(
@@ -114,19 +115,26 @@ class _NewTransactionState extends State<NewTransaction> {
   @override
   Widget build(BuildContext context) {
     return Card(
+      color: Theme.of(context).primaryColorDark,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(15.0),
       ),
       elevation: 0,
       child: Container(
         decoration: new BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).primaryColorDark,
           borderRadius: new BorderRadius.only(
             topLeft: const Radius.circular(25.0),
             topRight: const Radius.circular(25.0),
           ),
         ),
-        padding: EdgeInsets.all(10),
+        // padding: EdgeInsets.all(10),
+        padding: EdgeInsets.only(
+          top: 10,
+          left: 10,
+          right: 10,
+          bottom: MediaQuery.of(context).viewInsets.bottom + 10,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
@@ -169,6 +177,7 @@ class _NewTransactionState extends State<NewTransaction> {
             ),
             // onChanged: (amount) => amountInput = amount,
             Container(
+              // color: Theme.of(context).primaryColorDark,
               height: 70,
               child: Row(
                 children: [
