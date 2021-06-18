@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import '../models/transaction.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -85,7 +87,8 @@ class _TransactionListState extends State<TransactionList>
                         child: Lottie.asset(
                           'assets/animations/empty_box.json',
                           controller: _controller,
-                          width: mediaQuery.size.width * .9,
+                          width: mediaQuery.size.width *
+                              ((Platform.isIOS) ? 0.9 : 0.8),
                           repeat: false,
                           onLoaded: (composition) {
                             // _controller.animateTo(50);
