@@ -374,8 +374,8 @@ class _MyHomePageState extends State<MyHomePage> {
                       appBar.preferredSize.height -
                       mediaQuery.padding.top) *
                   ((mediaQuery.orientation == Orientation.portrait)
-                      ? (0.20)
-                      : (0.45)),
+                      ? ((Platform.isIOS) ? (0.20) : (0.25))
+                      : ((Platform.isIOS) ? (0.45) : (0.50))),
               child: Chart(_recentTransactions),
             ),
           Container(
@@ -383,8 +383,12 @@ class _MyHomePageState extends State<MyHomePage> {
                     mediaQuery.padding.top -
                     appBar.preferredSize.height) *
                 ((mediaQuery.orientation == Orientation.portrait)
-                    ? ((_showChart) ? (0.70) : (0.90))
-                    : ((_showChart) ? (0.45) : (0.90))),
+                    ? ((_showChart)
+                        ? ((Platform.isIOS) ? (0.70) : (0.75))
+                        : ((Platform.isIOS) ? (0.90) : (1)))
+                    : ((_showChart)
+                        ? ((Platform.isIOS) ? (0.45) : (0.50))
+                        : ((Platform.isIOS) ? (0.90) : (1)))),
             child: TransactionList(
               _userTransactions,
               _deleteTransaction,
