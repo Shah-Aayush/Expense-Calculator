@@ -374,7 +374,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       appBar.preferredSize.height -
                       mediaQuery.padding.top) *
                   ((mediaQuery.orientation == Orientation.portrait)
-                      ? ((Platform.isIOS) ? (0.20) : (0.25))
+                      ? ((Platform.isIOS) ? (0.25) : (0.25))
                       : ((Platform.isIOS) ? (0.45) : (0.50))),
               child: Chart(_recentTransactions),
             ),
