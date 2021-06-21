@@ -107,7 +107,7 @@ class _NewTransactionState extends State<NewTransaction> {
         ],
       ),
       margin: EdgeInsets.only(
-          bottom: MediaQuery.of(context).size.height / 2, right: 5, left: 5),
+          bottom: MediaQuery.of(context).size.height / 1.9, right: 5, left: 5),
       duration: Duration(seconds: 3),
       behavior: SnackBarBehavior.floating,
       shape: RoundedRectangleBorder(
