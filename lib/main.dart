@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import "dart:math";
 import 'package:lottie/lottie.dart';
+import 'package:flutter/rendering.dart';
 import 'package:animated_theme_switcher/animated_theme_switcher.dart';
 
 // import 'package:flushbar/flushbar.dart';
@@ -266,9 +267,111 @@ class _MyHomePageState extends State<MyHomePage> {
   // var themeIconName = Icons.wb_sunny_rounded;
   bool _showChart = true;
 
+  bool isExpanded = true;
+  late ScrollController fabController;
+
+  @override
+  void initState() {
+    super.initState();
+    fabController = ScrollController();
+    fabController.addListener(() {
+      setState(() {
+        isExpanded = fabController.position.userScrollDirection ==
+            ScrollDirection.forward;
+        isExpanded = (_userTransactions.length > 0) ? isExpanded : true;
+      });
+    });
+  }
+
+  PreferredSizeWidget _buildCupertinoNavBar() {
+    return CupertinoNavigationBar(
+      middle: Text('Personal Expenses'),
+      trailing: Row(
+        children: [
+          GestureDetector(
+            child: Icon(CupertinoIcons.add),
+            onTap: () => _startAddNewTransaction(context),
+          )
+        ],
+      ),
+    );
+  }
+
+  PreferredSize _buildMaterialNavBar() {
+    return PreferredSize(
+      preferredSize: Size.fromHeight(kToolbarHeight),
+      child: AppBar(
+        title:
+            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+          // SizedBox(
+          //   height: 10,
+          //   width: 40,
+          //   child:
+          ThemeSwitcher(
+            clipper: ThemeSwitcherCircleClipper(),
+            builder: (context) {
+              return IconButton(
+                icon: Icon(
+                  (isDark) ? Icons.wb_sunny_rounded : Icons.dark_mode,
+                  color:
+                      (isDark) ? Colors.amber.withOpacity(0.5) : Colors.amber,
+                ),
+                onPressed: () {
+                  if (isDark) {
+                    isDark = false;
+                  } else {
+                    isDark = true;
+                  }
+                  print('status : $isDark');
+                  // var brightness = ThemeProvider.of(context)!.brightness;
+                  ThemeSwitcher.of(context)!.changeTheme(
+                    theme: isDark ? darkTheme : lightTheme,
+                    // theme: brightness == Brightness.light
+                    //     ? darkTheme
+                    //     : lightTheme,
+                    reverseAnimation: isDark ? false : true,
+                  );
+                },
+              );
+            },
+          ),
+
+          Text(
+            'Personal Expenses',
+          ),
+          IconButton(
+            icon: Icon(
+              Icons.insert_chart_outlined,
+              color: _appBarIconColor,
+              size: 30,
+            ),
+            onPressed: () {
+              print('showchart toggle pressed.');
+              _isUserPressedChartButton = true;
+              setState(() {
+                if (_showChart) {
+                  _showChart = false;
+                  //white
+                  // _appBarIconColor = Colors.white;
+                  _appBarIconColor = Theme.of(context).backgroundColor;
+                } else {
+                  _showChart = true;
+                  //amber
+                  _appBarIconColor = Theme.of(context).accentColor;
+                }
+                print(_showChart);
+              });
+            },
+          )
+        ]),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
+
     print('at initial : $isDark');
     // bool _showChart = MediaQuery.of(context).orientation == Orientation.portrait;
     if (!_isUserPressedChartButton)
@@ -282,89 +385,8 @@ class _MyHomePageState extends State<MyHomePage> {
           _appBarIconColor = Theme.of(context).backgroundColor;
         }
       });
-    final PreferredSizeWidget appBar = Platform.isIOS
-        ? CupertinoNavigationBar(
-            middle: Text('Personal Expenses'),
-            trailing: Row(
-              children: [
-                GestureDetector(
-                  child: Icon(CupertinoIcons.add),
-                  onTap: () => _startAddNewTransaction(context),
-                )
-              ],
-            ),
-          )
-        : PreferredSize(
-            preferredSize: Size.fromHeight(kToolbarHeight),
-            child: AppBar(
-              title: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    // SizedBox(
-                    //   height: 10,
-                    //   width: 40,
-                    //   child:
-                    ThemeSwitcher(
-                      clipper: ThemeSwitcherCircleClipper(),
-                      builder: (context) {
-                        return IconButton(
-                          icon: Icon(
-                            (isDark) ? Icons.wb_sunny_rounded : Icons.dark_mode,
-                            color: (isDark)
-                                ? Colors.amber.withOpacity(0.5)
-                                : Colors.amber,
-                          ),
-                          onPressed: () {
-                            if (isDark) {
-                              isDark = false;
-                            } else {
-                              isDark = true;
-                            }
-                            print('status : $isDark');
-                            // var brightness = ThemeProvider.of(context)!.brightness;
-                            ThemeSwitcher.of(context)!.changeTheme(
-                              theme: isDark ? darkTheme : lightTheme,
-                              // theme: brightness == Brightness.light
-                              //     ? darkTheme
-                              //     : lightTheme,
-                              reverseAnimation: isDark ? false : true,
-                            );
-                          },
-                        );
-                      },
-                    ),
-
-                    Text(
-                      'Personal Expenses',
-                    ),
-                    IconButton(
-                      icon: Icon(
-                        Icons.insert_chart_outlined,
-                        color: _appBarIconColor,
-                        size: 30,
-                      ),
-                      onPressed: () {
-                        print('showchart toggle pressed.');
-                        _isUserPressedChartButton = true;
-                        setState(() {
-                          if (_showChart) {
-                            _showChart = false;
-                            //white
-                            // _appBarIconColor = Colors.white;
-                            _appBarIconColor =
-                                Theme.of(context).backgroundColor;
-                          } else {
-                            _showChart = true;
-                            //amber
-                            _appBarIconColor = Theme.of(context).accentColor;
-                          }
-                          print(_showChart);
-                        });
-                      },
-                    )
-                  ]),
-            ),
-          );
+    final PreferredSizeWidget appBar =
+        Platform.isIOS ? _buildCupertinoNavBar() : _buildMaterialNavBar();
     final pageBody = SafeArea(
       child: Column(
         children: [
@@ -374,7 +396,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       appBar.preferredSize.height -
                       mediaQuery.padding.top) *
                   ((mediaQuery.orientation == Orientation.portrait)
-                      ? ((Platform.isIOS) ? (0.20) : (0.25))
+                      ? ((Platform.isIOS) ? (0.25) : (0.25))
                       : ((Platform.isIOS) ? (0.45) : (0.50))),
               child: Chart(_recentTransactions),
             ),
@@ -390,9 +412,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         ? ((Platform.isIOS) ? (0.45) : (0.50))
                         : ((Platform.isIOS) ? (0.90) : (1)))),
             child: TransactionList(
-              _userTransactions,
-              _deleteTransaction,
-            ),
+                _userTransactions, _deleteTransaction, fabController),
           ),
         ],
       ),
@@ -526,17 +546,36 @@ class _MyHomePageState extends State<MyHomePage> {
               body: pageBody,
               floatingActionButtonLocation:
                   FloatingActionButtonLocation.centerFloat,
-              floatingActionButton: Platform.isIOS
-                  ? FloatingActionButton.extended(
-                      onPressed: () => _startAddNewTransaction(context),
-                      label: Text('Add a Transaction'),
-                      icon: Icon(Icons.add),
-                    )
-                  : FloatingActionButton(
-                      child: Icon(Icons.add),
-                      onPressed: () => _startAddNewTransaction(context),
-                    ),
-            ),
+              floatingActionButton:
+                  // Platform.isIOS ?
+                  AnimatedContainer(
+                width: isExpanded ? 200 : 56,
+                height: 56,
+                duration: Duration(milliseconds: 150),
+                child: Opacity(
+                  opacity: isExpanded ? 0.9 : 0.8,
+                  child: FloatingActionButton.extended(
+                    onPressed: () => _startAddNewTransaction(context),
+                    // label: Text('Add a Transaction'),
+                    // icon: Icon(Icons.add),
+                    icon: isExpanded ? Icon(Icons.add) : null,
+                    label: isExpanded
+                        ? Text(
+                            "Add a transaction",
+                            style: TextStyle(
+                              // color: Theme.of(context).primaryColor,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          )
+                        : Icon(Icons.add),
+                  ),
+                ),
+              )
+              // : FloatingActionButton(
+              //     child: Icon(Icons.add),
+              //     onPressed: () => _startAddNewTransaction(context),
+              //   ),
+              ),
     );
   }
 }

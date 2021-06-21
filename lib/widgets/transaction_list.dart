@@ -1,14 +1,17 @@
 import 'dart:io';
 
+import 'package:expense_calculator/widgets/transaction_item.dart';
+
 import '../models/transaction.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+// import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 
 class TransactionList extends StatefulWidget {
   final List<Transaction> transactions;
   final Function deleteTx;
-  TransactionList(this.transactions, this.deleteTx);
+  final ScrollController fabController;
+  TransactionList(this.transactions, this.deleteTx, this.fabController);
 
   @override
   _TransactionListState createState() => _TransactionListState();
@@ -106,65 +109,10 @@ class _TransactionListState extends State<TransactionList>
                   ],
                 )
               : ListView.builder(
+                  controller: widget.fabController,
                   itemBuilder: (ctx, index) {
-                    return Card(
-                      elevation: 5,
-                      margin: EdgeInsets.symmetric(vertical: 10, horizontal: 5),
-                      child: ListTile(
-                        leading: CircleAvatar(
-                          radius: 30,
-                          backgroundColor: Theme.of(context).primaryColor,
-                          child: Padding(
-                            padding: EdgeInsets.all(6),
-                            child: FittedBox(
-                              child: Text(
-                                '\$${widget.transactions[index].amount.toStringAsFixed(2)}',
-                                style: TextStyle(
-                                    color: Theme.of(context).primaryColorDark),
-                              ),
-                            ),
-                          ),
-                        ),
-                        title: Text(
-                          widget.transactions[index].title.toString(),
-                          style: Theme.of(context).textTheme.headline6,
-                        ),
-                        subtitle: Text(
-                          DateFormat.yMMMMd()
-                              .format(widget.transactions[index].date),
-                          style: TextStyle(
-                            color: Colors.grey,
-                            fontFamily: 'Quicksand',
-                          ),
-                        ),
-                        trailing: (mediaQuery.size.width > 460)
-                            ? TextButton.icon(
-                                onPressed: () {
-                                  print(
-                                      'delete pressed. ${widget.transactions[index].id}');
-                                  widget
-                                      .deleteTx(widget.transactions[index].id);
-                                },
-                                icon: Icon(Icons.delete),
-                                label: Text('Delete'),
-                                style: TextButton.styleFrom(
-                                  primary: Theme.of(context).errorColor,
-                                ),
-                              )
-                            : IconButton(
-                                icon: Icon(Icons.delete),
-                                color: Theme.of(context).errorColor,
-                                onPressed: () {
-                                  print(
-                                      'delete pressed. ${widget.transactions[index].id}');
-                                  widget
-                                      .deleteTx(widget.transactions[index].id);
-                                },
-                                // onPressed: () =>
-                                //     widget.deleteTx(widget.transactions[index].id),
-                              ),
-                      ),
-                    );
+                    return TransactionItem(widget.transactions[index],
+                        widget.deleteTx, mediaQuery);
 
                     // return Card(
                     //     child: Row(
@@ -276,3 +224,67 @@ class _TransactionListState extends State<TransactionList>
     );
   }
 }
+
+
+/*
+previous code of card : 
+Card(
+                      elevation: 5,
+                      margin: const EdgeInsets.symmetric(
+                          vertical: 10, horizontal: 5),
+                      child: ListTile(
+                        leading: CircleAvatar(
+                          radius: 30,
+                          backgroundColor: Theme.of(context).primaryColor,
+                          child: Padding(
+                            padding: EdgeInsets.all(6),
+                            child: FittedBox(
+                              child: Text(
+                                '\$${widget.transactions[index].amount.toStringAsFixed(2)}',
+                                style: TextStyle(
+                                    color: Theme.of(context).primaryColorDark),
+                              ),
+                            ),
+                          ),
+                        ),
+                        title: Text(
+                          widget.transactions[index].title.toString(),
+                          style: Theme.of(context).textTheme.headline6,
+                        ),
+                        subtitle: Text(
+                          DateFormat.yMMMMd()
+                              .format(widget.transactions[index].date),
+                          style: TextStyle(
+                            color: Colors.grey,
+                            fontFamily: 'Quicksand',
+                          ),
+                        ),
+                        trailing: (mediaQuery.size.width > 460)
+                            ? TextButton.icon(
+                                onPressed: () {
+                                  print(
+                                      'delete pressed. ${widget.transactions[index].id}');
+                                  widget
+                                      .deleteTx(widget.transactions[index].id);
+                                },
+                                icon: Icon(Icons.delete),
+                                label: const Text('Delete'),
+                                style: TextButton.styleFrom(
+                                  primary: Theme.of(context).errorColor,
+                                ),
+                              )
+                            : IconButton(
+                                icon: const Icon(Icons.delete),
+                                color: Theme.of(context).errorColor,
+                                onPressed: () {
+                                  print(
+                                      'delete pressed. ${widget.transactions[index].id}');
+                                  widget
+                                      .deleteTx(widget.transactions[index].id);
+                                },
+                                // onPressed: () =>
+                                //     widget.deleteTx(widget.transactions[index].id),
+                              ),
+                      ),
+                    )
+*/
