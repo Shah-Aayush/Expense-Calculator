@@ -1,6 +1,6 @@
 # Expense Calculator app
 
-This is a personal expense calculator mobile app build with flutter.
+This is a personal expense calculator mobile app built with flutter.
 ---
 
 Android App (Material design) | IOS app (Cupertino design)
